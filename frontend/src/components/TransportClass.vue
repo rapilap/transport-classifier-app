@@ -1,8 +1,16 @@
 <template>
   <div
-    class="w-[700px] h-[600px] bg-[#2e2e2e] p-4 py-6 rounded-3xl drop-shadow-xl"
+    class="w-[700px] h-[600px] bg-[#2e2e2e] px-4 pt-6 rounded-3xl drop-shadow-xl"
   >
-    <h1 class="text-white text-3xl font-semibold mb-4">{{ msg }}</h1>
+    <div class="flex-col items-start justify-start flex rounded-lg w-max">
+      <h1 class="text-white text-3xl font-semibold mb-2">
+        {{ msg }}
+      </h1>
+      <p class="text-gray-400 text-sm mb-4">
+        Digunakan untuk melakukan klasifikasi jenis kendaraan yang terdaftar di
+        Indonesia
+      </p>
+    </div>
 
     <!-- Upload Area -->
     <div
@@ -11,7 +19,7 @@
       @dragleave.prevent="isDragging = false"
       @dragenter.prevent="isDragging = true"
       :class="[
-        'border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 h-[calc(100%-6.5rem)]',
+        'border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 h-[calc(100%-10.5rem)]',
         isDragging
           ? 'border-blue-400 bg-blue-500/10'
           : 'border-gray-500 hover:border-gray-400',
@@ -34,7 +42,7 @@
           <img
             :src="image.preview"
             :alt="image.file.name"
-            class="max-w-[350px] max-h-[350px] object-contain rounded-lg"
+            class="max-w-[200px] max-h-[200px] object-contain rounded-lg"
           />
           <button
             @click="removeImage"
@@ -113,7 +121,7 @@
       </div>
     </div>
 
-    <div class="w-full my-2 items-end justify-end flex rounded-lg py-2">
+    <div class="w-full mt-2 items-end justify-end flex rounded-lg pt-2">
       <button
         class="bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
       >
