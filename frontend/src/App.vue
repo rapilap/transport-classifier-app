@@ -3,7 +3,7 @@ import TransportClass from "./components/TransportClass.vue";
 </script>
 
 <template>
-  <TransportClass msg="Transport Classification" />
+  <TransportClass msg="Vehicle Classification" />
 </template>
 
 <style scoped>
