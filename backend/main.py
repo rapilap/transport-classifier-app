@@ -9,11 +9,18 @@ from preprocess import preprocess_image, extract_fusion_features
 
 app = FastAPI(title="Vehicle Classification API")
 
+# CORS - Must be before routes
+# Update setelah deploy frontend untuk security
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://*.vercel.app", "*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://*.vercel.app",  # Vercel preview & production
+        "*"  # TEMPORARY - ganti dengan domain spesifik setelah deploy
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
