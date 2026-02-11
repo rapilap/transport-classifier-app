@@ -18,7 +18,7 @@ pydantic==2.12.5
 pydantic_core==2.41.5
 python-multipart==0.0.22
 scikit-image==0.26.0
-scikit-learn==1.8.0
+scikit-learn==1.6.1
 scipy==1.17.0
 starlette==0.52.1
 threadpoolctl==3.6.0

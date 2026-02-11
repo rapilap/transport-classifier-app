@@ -1,34 +1,29 @@
 import numpy as np
-import io
-import cv2
-
 from PIL import Image
 from skimage.feature import hog, local_binary_pattern
+import cv2
+import io
 
 def preprocess_image(image_bytes, target_size=(128, 128)):
     image = Image.open(io.BytesIO(image_bytes))
-
-    if image.mode != "RGB":
-        image = image.convert("RGB")
+    
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
 
     img_array = np.array(image)
-
     img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+    img_resized = cv2.resize(img_bgr, target_size)
+    img_noise = cv2.GaussianBlur(img_resized, (5, 5), 0)
+    img_normalized = img_noise.astype('float32') / 255.0
 
-    image_resized = image.resize(img_bgr, target_size)
-
-    img_noise = cv2.GaussianBlur(image_resized, (5, 5), 0)
-
-    img_norm = img_noise.astype('float32') / 255.0
-
-    img_denorm = (img_norm * 255).astype('uint8')
+    img_denorm = (img_normalized * 255).astype('uint8')
     gray_img = cv2.cvtColor(img_denorm, cv2.COLOR_BGR2GRAY)
+    
+    img_gray_normalized = gray_img.astype('float32') / 255.0
+    
+    return img_gray_normalized
 
-    gray_img_norm = gray_img.astype('float32') / 255.0
-
-    return gray_img_norm
-
-def extract_hog_features(image):
+def extract_hog(image):
     features = hog(
         image,
         orientations=9,
@@ -37,13 +32,18 @@ def extract_hog_features(image):
         visualize=False,
         feature_vector=True
     )
-
     return features
 
 def extract_sobel_features(image):
+    # Convert float image (0-1) ke uint8 (0-255) untuk Sobel
+    if image.dtype == np.float32 or image.dtype == np.float64:
+        image_uint8 = (image * 255).astype(np.uint8)
+    else:
+        image_uint8 = image
+    
     # Sobel X dan Y
-    sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
-    sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+    sobelx = cv2.Sobel(image_uint8, cv2.CV_64F, 1, 0, ksize=3)
+    sobely = cv2.Sobel(image_uint8, cv2.CV_64F, 0, 1, ksize=3)
     
     # Magnitude (gabungan X dan Y)
     sobel_mag = np.sqrt(sobelx**2 + sobely**2)
@@ -55,9 +55,15 @@ def extract_sobel_features(image):
     
     return sobel_hist
 
-def extract_lbp_features(image):
+def extract_lbp(image):
+    # Convert float image (0-1) ke uint8 (0-255) untuk LBP
+    if image.dtype == np.float32 or image.dtype == np.float64:
+        image_uint8 = (image * 255).astype(np.uint8)
+    else:
+        image_uint8 = image
+    
     features = local_binary_pattern(
-        image,
+        image_uint8,
         P=8,
         R=1,
         method='uniform'
@@ -75,13 +81,15 @@ def extract_lbp_features(image):
     
     return lbp_hist
 
+
 def extract_fusion_features(image, max_length=None):
-    hog_features = extract_hog_features(image)
+    hog_features = extract_hog(image)
     sobel_features = extract_sobel_features(image)
-    lbp_features = extract_lbp_features(image)
-
-    hog_sobel_features = np.concatenate([hog_features, sobel_features])
-
-    fusion_features = np.concatenate([hog_sobel_features, lbp_features])
-
-    return fusion_features
+    lbp_features = extract_lbp(image)
+    
+    hog_sobel = np.concatenate([hog_features, sobel_features])
+    
+    return {
+        'hog_sobel': hog_sobel,
+        'lbp': lbp_features
+    }

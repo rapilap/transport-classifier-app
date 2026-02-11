@@ -9,13 +9,13 @@ from preprocess import preprocess_image, extract_fusion_features
 
 app = FastAPI(title="Vehicle Classification API")
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Load models saat startup
@@ -116,6 +116,9 @@ async def predict(file: UploadFile = File(...)):
         # Predict
         prediction = svm_model.predict(pca_features)[0]
         
+        # Convert numpy types to Python native types
+        prediction = int(prediction)
+        
         # Get probability/confidence (jika SVM pakai probability=True)
         try:
             probabilities = svm_model.predict_proba(pca_features)[0]
@@ -125,7 +128,7 @@ async def predict(file: UploadFile = File(...)):
             top_3_idx = np.argsort(probabilities)[::-1][:3]
             top_3_predictions = [
                 {
-                    "class": model_info['classes'][idx],
+                    "class": str(model_info['classes'][int(idx)]),
                     "confidence": float(probabilities[idx])
                 }
                 for idx in top_3_idx
@@ -138,7 +141,7 @@ async def predict(file: UploadFile = File(...)):
         return {
             "success": True,
             "prediction": {
-                "class": prediction,
+                "class": str(model_info['classes'][prediction]),  # Ensure string
                 "confidence": confidence,
             },
             "top_3": top_3_predictions,
@@ -146,11 +149,21 @@ async def predict(file: UploadFile = File(...)):
         }
         
     except Exception as e:
-        print(f"Error during prediction: {str(e)}")
-        print(traceback.format_exc())
+        error_details = {
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }
+        print(f"❌ Error during prediction: {str(e)}")
+        print(f"Full traceback:\n{traceback.format_exc()}")
+        
+        # Return detailed error for debugging
         raise HTTPException(
             status_code=500,
-            detail=f"Prediction failed: {str(e)}"
+            detail={
+                "message": "Prediction failed",
+                "error": str(e),
+                "type": type(e).__name__
+            }
         )
 
 @app.post("/predict-batch")

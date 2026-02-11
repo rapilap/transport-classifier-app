@@ -7,8 +7,7 @@
         {{ msg }}
       </h1>
       <p class="text-gray-400 text-sm mb-4">
-        Digunakan untuk melakukan klasifikasi jenis kendaraan yang terdaftar di
-        Indonesia
+        Used to classify types of vehicles registered in Indonesia
       </p>
     </div>
 
@@ -72,7 +71,7 @@
           type="button"
           class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         >
-          Ganti Gambar
+          Change Image
         </button>
       </div>
 
@@ -85,14 +84,14 @@
           <img
             :src="image.preview"
             :alt="image.file.name"
-            class="max-w-[180px] max-h-[180px] object-contain rounded-lg"
+            class="max-w-[200px] max-h-[200px] object-contain rounded-lg"
           />
         </div>
 
         <!-- Hasil -->
-        <div class="bg-gray-800 rounded-lg p-4 w-full max-w-md">
+        <div class="bg-[#2a2a2a] rounded-lg p-4 w-full max-w-md">
           <div class="text-center mb-3">
-            <p class="text-gray-400 text-sm">Hasil Klasifikasi:</p>
+            <p class="text-gray-400 text-sm mt-2">Classification Result:</p>
             <p class="text-white text-2xl font-bold mt-1">
               {{ prediction.class }}
             </p>
@@ -120,9 +119,9 @@
         <button
           @click="reset"
           type="button"
-          class="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+          class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
         >
-          Klasifikasi Gambar Lain
+          Classify again
         </button>
       </div>
 
@@ -151,8 +150,8 @@
           <p class="text-lg font-medium text-white">
             {{
               isDragging
-                ? "Lepaskan gambar di sini"
-                : "Drag & drop gambar di sini"
+                ? "Drop it like it's hot!"
+                : "Drag & drop the image here"
             }}
           </p>
           <p class="text-sm text-gray-400 mt-1">atau</p>
@@ -161,12 +160,12 @@
             type="button"
             class="mt-3 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
           >
-            Pilih Gambar
+            Choose Image
           </button>
         </div>
 
         <p class="text-xs text-gray-400">
-          Format: PNG, JPG, JPEG, WebP, JFIF • Max: 5MB per gambar
+          Format: PNG, JPG, JPEG, WebP, JFIF • Max: 5MB
         </p>
       </div>
     </div>
